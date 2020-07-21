@@ -1,0 +1,66 @@
+---
+title: "UAV data processing"
+author: "Dan Carpenter"
+date: "21/07/2020"
+output: odt_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Processing UAV imagery
+
+Raw images from the UAV are processed and orthomosaic produced using OpenDroneMap.  The resulting orthomasic is a .tiff file.  Read this into R using the raster package.  This shows a false colour image in R.  In QGIS, this is a colour photo image.
+
+```{r uav image}
+library(raster)
+sonning <- raster("C:/Users/TVERC/Documents/Battlemead UAV/Sonning/sonning.tif")
+plot(sonning)
+```
+
+The colour images are useful, but can we extract useful information from the imagery?  One option is to log transform the data to see if this reveals any patterns.
+
+```{r logged, echo=TRUE}
+x <- log(sonning)
+plot(x)
+```
+
+The log transformed data does nicely pick out the trees from the grass and the grass paths are revealed, but it does not seem to be very different from the first image.
+
+There are a number of vegetation indices that we can apply to these data.  To do this we need to read in each band of the raster individually adn then stack then together.  The following are some examples.  
+
+```{r rgb stack, echo=TRUE}
+sonningr <- raster("C:/Users/TVERC/Documents/Battlemead UAV/Sonning/sonning.tif", band = 1)
+sonningg <- raster("C:/Users/TVERC/Documents/Battlemead UAV/Sonning/sonning.tif", band = 2)
+sonningb <- raster("C:/Users/TVERC/Documents/Battlemead UAV/Sonning/sonning.tif", band = 3)
+
+sonningrgb <- stack(sonningr, sonningg, sonningb)
+plotRGB(sonningrgb, 1,2,3)
+```
+
+
+## Excess green vegetation index
+```{r egvi, echo=TRUE}
+s_egvi <- exg(sonningrgb, 1, 2, 3)
+plot(s_egvi)
+```
+
+## Normalized green red difference index
+```{r ngrdi, echo=TRUE}
+s_ngrdi <- NGRDI(sonningrgb, 1, 2, 3)
+plot(s_ngdri)
+```
+
+## Visible atmospherically resistance index
+```{r vari, echo=TRUE}
+s_vari <- VARI(sonningrgb, 1, 2, 3)
+plot(s_vari)
+```
+
+## True colour vegetation index
+```{r tcvi, echo=TRUE}
+s_tcvi <- tcvi(sonningrgb, 1, 2, 3)
+plot(s_tcvi)
+```
+

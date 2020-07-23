@@ -14,9 +14,6 @@ sonningb <- raster("sonning.tif", band = 3)
 sonningrgb <- stack(sonningr, sonningg, sonningb)
 plotRGB(sonningrgb, 1,2,3)
 
-# TODO normalise image?
-# where was the reference to this?
-
 # process through indices
 sexg <- exg(sonningrgb, 1, 2, 3)
 plot(sexg)
@@ -29,3 +26,19 @@ plot(svari)
 
 stcvi <- tcvi(sonningrgb, 1, 2, 3)
 plot(stcvi)
+
+# normalise image
+sonningn <- normalise_rgb(sonningrgb, 1, 2, 3)
+
+# indices with normalised images
+nexg <- exg(sonningn, 1, 2, 3)
+plot(nexg)
+
+nngrdi <- NGRDI(sonningn, 1, 2, 3)
+plot(nngrdi)
+
+nvari <- VARI(sonningn, 1, 2, 3)
+plot(nvari)
+
+ntcvi <- tcvi(sonningn, 1, 2, 3)
+plot(ntcvi)

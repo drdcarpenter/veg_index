@@ -30,3 +30,15 @@ tcvi <- function(img, i, j, k){
   vi <- 1.4 * (2*bi - 2*bk)/(2*bi - bj - 2*bk + 255 * 0.4)
   return(vi)
 }
+
+
+normalise_rgb <- function(img, i, j, k) {
+  r <- img[[i]]
+  g <- img[[j]]
+  b <- img[[k]]
+  r <- r/(r + g + b)
+  g <- g/(r + g + b)
+  g <- b/(r + g + b)
+  img <- raster::stack(r, g, b)
+  return(img)
+}
